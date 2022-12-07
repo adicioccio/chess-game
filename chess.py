@@ -1,22 +1,25 @@
 from tkinter import *
 
 
-squares = ["a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"]
+button_array={}
 
 
 def setup_tiles(root):
-    for x in range(8):
-        for y in range(8):
-            btn = Button(root, command=lambda : tile_clicked("click"), height=2, width=5)
-            btn.grid(column=x, row=y)
+    counter = 1
+    for i in range(8):
+        for j in range(8):
+            def func(sq=counter):
+                select_tile(sq)
+            button_array[i] = Button(root, text=counter, command=func, height=4, width=9).grid(column=i, row=j)
+            counter+=1
 
 
-def tile_clicked(sq):
+def select_tile(sq):
     print(sq)
 
 
 def new():
-    print("New button pressed!")
+    print("reset_board()")
 
 
 root = Tk()
@@ -24,7 +27,7 @@ setup_tiles(root)
 main_menu = Menu(root)
 root.config(menu=main_menu)
 main_menu.add_command(label='New', command=new)
-root.geometry("900x580")
+root.geometry("586x570")
 root.title("Chess Game")
 root.config(bg="#111111")
 root.resizable(height=False, width=False)
