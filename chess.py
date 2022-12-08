@@ -1,21 +1,28 @@
 from tkinter import *
-
+import math
 
 button_array={}
 
 
 def setup_tiles(root):
-    counter = 1
+    index = 1
     for i in range(8):
         for j in range(8):
-            def func(sq=counter):
-                select_tile(sq)
-            button_array[i] = Button(root, text=counter, command=func, height=4, width=9).grid(column=i, row=j)
-            counter+=1
+            def func(num=index):
+                select_tile(num)
+            inverse = ['1', '8', '7', '6', '5', '4', '3', '2', '1']
+            letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+            display = f"{letters[math.floor((index/8)-0.01)]}{inverse[index%8]}"
+            button_array[i] = Button(root, text=display, command=func, height=4, width=9).grid(column=i, row=j)
+            index+=1
 
 
-def select_tile(sq):
+def select_tile(num):
+    inverse = ['1','8','7','6','5','4','3','2','1']
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    sq = f"{letters[math.floor((num / 8) - 0.01)]}{inverse[num % 8]}"
     print(sq)
+
 
 
 def new():
