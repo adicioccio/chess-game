@@ -5,22 +5,33 @@ import math
 
 root = Tk()
 
-w_bishop = PhotoImage(file=r"images/WB.png")
-b_bishop = PhotoImage(file=r"images/BB.png")
+wk = PhotoImage(file=r"images/WK.png")
+wq = PhotoImage(file=r"images/WQ.png")
+wr = PhotoImage(file=r"images/WR.png")
+wb = PhotoImage(file=r"images/WB.png")
+wh = PhotoImage(file=r"images/WH.png")
+wp = PhotoImage(file=r"images/WP.png")
+bk = PhotoImage(file=r"images/BK.png")
+bq = PhotoImage(file=r"images/BQ.png")
+br = PhotoImage(file=r"images/BR.png")
+bb = PhotoImage(file=r"images/BB.png")
+bh = PhotoImage(file=r"images/BH.png")
+bp = PhotoImage(file=r"images/BP.png")
+empty = PhotoImage(file=r"images/EMPTY.png")
 
 tiles = {}
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
 
 def setup_tiles():
     index = 1
     alternate = True
+    color = ['#769656', '#eeeed2']
+    inverse = ['1', '8', '7', '6', '5', '4', '3', '2', '1']
     for i in range(8):
         for j in range(8):
-            color = ['#769656', '#eeeed2']
-            inverse = ['1', '8', '7', '6', '5', '4', '3', '2', '1']
-            letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
             pos = f"{letters[math.floor((index/8)-0.01)]}{inverse[index%8]}"
-            btn = Button(root, text=pos, bg=color[alternate], activebackground="white", image=b_bishop)
+            btn = Button(root, text=pos, bg=color[alternate], activebackground="white")
             btn.grid(column=i, row=j)
             tiles.setdefault(pos, btn)
             tiles[pos].config(command=lambda key=tiles[pos]: select_tile(key))
@@ -28,20 +39,37 @@ def setup_tiles():
                 alternate=not alternate
             index+=1
 
+
+def setup_pieces():
+    for tile in tiles:
+        tiles[tile].config(image=empty)
+    b_setup = [['a8', br], ['b8', bh], ['c8', bb], ['d8', bq], ['e8', bk], ['f8', bb], ['g8', bh], ['h8', br]]
+    w_setup = [['a1', wr], ['b1', wh], ['c1', wb], ['d1', wq], ['e1', wk], ['f1', wb], ['g1', wh], ['h1', wr]]
+    for i in range(8):
+        tiles[b_setup[i][0]].config(image=b_setup[i][1])
+        tiles[w_setup[i][0]].config(image=w_setup[i][1])
+    for i in range(8):
+        tiles[f"{letters[i]}7"].config(image=bp)
+        tiles[f"{letters[i]}2"].config(image=wp)
+
+
 def select_tile(key):
     text = key.cget('text')
-    tiles[text].config(image=w_bishop)
+    tiles[text].config(image=empty)
     print(text)
 
 
 def new():
-    print("reset_board()")
+    setup_pieces()
 
 
 setup_tiles()
+setup_pieces()
+
 main_menu = Menu(root)
 root.config(menu=main_menu)
 main_menu.add_command(label="New", command=new)
+
 root.geometry("528x528")
 root.title("Chess Game - 0.0.0")
 root.config(bg="#111111")
