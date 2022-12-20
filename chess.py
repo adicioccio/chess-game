@@ -22,6 +22,11 @@ empty = PhotoImage(file=r"images/EMPTY.png")
 tiles = {}
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
+class Select:
+    swap = ''
+    image = None
+select = Select()
+
 
 def setup_tiles():
     index = 1
@@ -55,8 +60,15 @@ def setup_pieces():
 
 def select_tile(key):
     text = key.cget('text')
-    tiles[text].config(image=empty)
-    print(text)
+    image = key.cget('image')
+    if select.swap == '':
+        select.swap = text
+        select.image = image
+    else:
+        print(f"{select.swap}->{text}")
+        tiles[text].config(image=select.image)
+        tiles[select.swap].config(image=empty)
+        select.swap = ''
 
 
 def new():
