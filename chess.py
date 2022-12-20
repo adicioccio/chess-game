@@ -25,6 +25,7 @@ letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 class Select:
     swap = ''
     image = None
+    bg = ''
 select = Select()
 
 
@@ -61,13 +62,23 @@ def setup_pieces():
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
+    print(image)
     if select.swap == '':
-        select.swap = text
-        select.image = image
+        # player chose square thats empty
+        if image == 'pyimage13':
+            select.swap = ''
+        # player chose square with piece
+        else:
+            select.swap = text
+            select.image = image
+            select.bg = key.cget('bg')
+            tiles[text].config(bg='#E0CD66')
+    # after player selects first selection
     else:
-        print(f"{select.swap}->{text}")
-        tiles[text].config(image=select.image)
-        tiles[select.swap].config(image=empty)
+        if text != select.swap:
+            tiles[text].config(image=select.image)
+            tiles[select.swap].config(image=empty)
+            tiles[select.swap].config(bg=select.bg)
         select.swap = ''
 
 
