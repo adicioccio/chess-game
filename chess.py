@@ -75,24 +75,27 @@ def select_tile(key):
             tiles[text].config(bg='#E0CD66')
     # after player selects first selection
     else:
-        if text != select.swap:
+        if text == select.swap:
+            tiles[select.swap].config(bg=select.bg)
+        else:
             tiles[text].config(image=select.image)
             tiles[select.swap].config(image=empty)
             tiles[select.swap].config(bg=select.bg)
         select.swap = ''
 
-
 def new():
     setup_pieces()
+    if select.swap != '':
+        tiles[select.swap].config(bg=select.bg)
+        select.swap = ''
 
 
 setup_tiles()
 setup_pieces()
 
 main_menu = Menu(root)
-root.config(menu=main_menu)
 main_menu.add_command(label="New", command=new)
-
+root.config(menu=main_menu)
 root.geometry("528x528")
 root.title("Chess Game - 0.0.0")
 root.config(bg="#111111")
