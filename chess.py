@@ -18,14 +18,17 @@ bb = PhotoImage(file=r"images/BB.png")
 bh = PhotoImage(file=r"images/BH.png")
 bp = PhotoImage(file=r"images/BP.png")
 empty = PhotoImage(file=r"images/EMPTY.png")
+dot = PhotoImage(file=r"images/DOT.png")
 
 tiles = {}
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
 
 class Select:
     swap = ''
     image = None
     bg = ''
+    moves = []
 select = Select()
 
 
@@ -59,10 +62,25 @@ def setup_pieces():
         tiles[f"{letters[i]}2"].config(image=wp)
 
 
+def legal_move(text, image):
+    if image == 'pyimage6': # white pawn
+        if text[1] == "2":
+            num = int(text[1])
+            if tiles[f'{text[0]}{num + 1}'].cget('image') == 'pyimage13':
+                select.moves.append(f'{text[0]}{num + 1}')
+                tiles[f'{text[0]}{num + 1}'].config(image=dot)
+            if tiles[f'{text[0]}{num + 2}'].cget('image') == 'pyimage13':
+                select.moves.append(f'{text[0]}{num + 2}')
+                tiles[f'{text[0]}{num + 2}'].config(image=dot)
+        else:
+            num = int(text[1])
+            if tiles[f'{text[0]}{num + 1}'].cget('image') == 'pyimage13':
+                select.moves.append(f'{text[0]}{num + 1}')
+                tiles[f'{text[0]}{num + 1}'].config(image=dot)
+
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
-    print(image)
     if select.swap == '':
         # player chose square thats empty
         if image == 'pyimage13':
@@ -73,15 +91,25 @@ def select_tile(key):
             select.image = image
             select.bg = key.cget('bg')
             tiles[text].config(bg='#E0CD66')
+            legal_move(text, image)
     # after player selects first selection
     else:
         if text == select.swap:
             tiles[select.swap].config(bg=select.bg)
-        else:
+            for move in select.moves:
+                tiles[move].config(image=empty)
+            select.swap = ''
+        if text in select.moves:
             tiles[text].config(image=select.image)
             tiles[select.swap].config(image=empty)
             tiles[select.swap].config(bg=select.bg)
-        select.swap = ''
+            for move in select.moves:
+                if move != text:
+                    tiles[move].config(image=empty)
+            select.moves.clear()
+            select.swap = ''
+
+
 
 def new():
     setup_pieces()
