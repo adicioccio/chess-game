@@ -20,6 +20,9 @@ bp = PhotoImage(file=r"images/BP.png")
 empty = PhotoImage(file=r"images/EMPTY.png")
 dot = PhotoImage(file=r"images/DOT.png")
 
+b_pieces = ['pyimage7', 'pyimage8', 'pyimage9', 'pyimage10', 'pyimage11', 'pyimage12']
+w_pieces = ['pyimage1', 'pyimage2', 'pyimage3', 'pyimage4', 'pyimage5', 'pyimage6']
+
 tiles = {}
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
@@ -29,6 +32,7 @@ class Select:
     image = None
     bg = ''
     moves = []
+    moveImages = []
 select = Select()
 
 
@@ -60,6 +64,8 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
+    tiles['b4'].config(image=bb)
+    tiles['d4'].config(image=bb)
 
 
 def legal_move(text, image):
@@ -68,15 +74,27 @@ def legal_move(text, image):
             num = int(text[1])
             if tiles[f'{text[0]}{num + 1}'].cget('image') == 'pyimage13':
                 select.moves.append(f'{text[0]}{num + 1}')
+                select.moveImages.append(tiles[f'{text[0]}{num + 1}'].cget('image'))
                 tiles[f'{text[0]}{num + 1}'].config(image=dot)
             if tiles[f'{text[0]}{num + 2}'].cget('image') == 'pyimage13':
                 select.moves.append(f'{text[0]}{num + 2}')
+                select.moveImages.append(tiles[f'{text[0]}{num + 2}'].cget('image'))
                 tiles[f'{text[0]}{num + 2}'].config(image=dot)
         else:
             num = int(text[1])
             if tiles[f'{text[0]}{num + 1}'].cget('image') == 'pyimage13':
                 select.moves.append(f'{text[0]}{num + 1}')
+                select.moveImages.append(tiles[f'{text[0]}{num + 1}'].cget('image'))
                 tiles[f'{text[0]}{num + 1}'].config(image=dot)
+        move1 = letters[letters.index(text[0])+1]+f'{num+1}'
+        move2 = letters[letters.index(text[0])-1]+f'{num+1}'
+        if tiles[move1].cget('image') in b_pieces:
+            select.moves.append(move1)
+            select.moveImages.append(tiles[move1].cget('image'))
+        if tiles[move2].cget('image') in b_pieces:
+            select.moves.append(move2)
+            select.moveImages.append(tiles[move2].cget('image'))
+            
 
 def select_tile(key):
     text = key.cget('text')
@@ -99,16 +117,20 @@ def select_tile(key):
             for move in select.moves:
                 tiles[move].config(image=empty)
             select.swap = ''
+            select.moves.clear()
+            select.moveImages.clear()
         if text in select.moves:
             tiles[text].config(image=select.image)
             tiles[select.swap].config(image=empty)
             tiles[select.swap].config(bg=select.bg)
+            count = 0
             for move in select.moves:
                 if move != text:
-                    tiles[move].config(image=empty)
-            select.moves.clear()
+                    tiles[move].config(image=select.moveImages[count])
+                count=count+1
             select.swap = ''
-
+            select.moves.clear()
+            select.moveImages.clear()
 
 
 def new():
