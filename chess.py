@@ -2,7 +2,6 @@ from tkinter import *
 from PIL import Image, ImageTk
 import math
 
-
 root = Tk()
 
 wk = PhotoImage(file=r"images/WK.png")
@@ -33,6 +32,8 @@ class Select:
     bg = ''
     moves = []
     moveImages = []
+
+
 select = Select()
 
 
@@ -43,14 +44,14 @@ def setup_tiles():
     inverse = ['1', '8', '7', '6', '5', '4', '3', '2', '1']
     for i in range(8):
         for j in range(8):
-            pos = f"{letters[math.floor((index/8)-0.01)]}{inverse[index%8]}"
+            pos = f"{letters[math.floor((index / 8) - 0.01)]}{inverse[index % 8]}"
             btn = Button(root, text=pos, bg=color[alternate], activebackground="white")
             btn.grid(column=i, row=j)
             tiles.setdefault(pos, btn)
             tiles[pos].config(command=lambda key=tiles[pos]: select_tile(key))
-            if (index%8!=0):
-                alternate=not alternate
-            index+=1
+            if (index % 8 != 0):
+                alternate = not alternate
+            index += 1
 
 
 def setup_pieces():
@@ -64,12 +65,11 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    tiles['b4'].config(image=bb)
-    tiles['d4'].config(image=bb)
+    # tiles['b3'].config(image=bb)
 
 
 def legal_move(text, image):
-    if image == 'pyimage6': # white pawn
+    if image == 'pyimage6':  # white pawn
         if text[1] == "2":
             num = int(text[1])
             if tiles[f'{text[0]}{num + 1}'].cget('image') == 'pyimage13':
@@ -86,15 +86,21 @@ def legal_move(text, image):
                 select.moves.append(f'{text[0]}{num + 1}')
                 select.moveImages.append(tiles[f'{text[0]}{num + 1}'].cget('image'))
                 tiles[f'{text[0]}{num + 1}'].config(image=dot)
-        move1 = letters[letters.index(text[0])+1]+f'{num+1}'
-        move2 = letters[letters.index(text[0])-1]+f'{num+1}'
-        if tiles[move1].cget('image') in b_pieces:
-            select.moves.append(move1)
-            select.moveImages.append(tiles[move1].cget('image'))
-        if tiles[move2].cget('image') in b_pieces:
-            select.moves.append(move2)
-            select.moveImages.append(tiles[move2].cget('image'))
-            
+        try:
+            move1 = letters[letters.index(text[0]) + 1] + f'{num + 1}'
+            if tiles[move1].cget('image') in b_pieces:
+                select.moves.append(move1)
+                select.moveImages.append(tiles[move1].cget('image'))
+        except:
+            move1 = 'a0'
+        try:
+            move2 = letters[letters.index(text[0]) - 1] + f'{num + 1}'
+            if tiles[move2].cget('image') in b_pieces:
+                select.moves.append(move2)
+                select.moveImages.append(tiles[move2].cget('image'))
+        except:
+            move2 = 'a0'
+
 
 def select_tile(key):
     text = key.cget('text')
@@ -114,8 +120,11 @@ def select_tile(key):
     else:
         if text == select.swap:
             tiles[select.swap].config(bg=select.bg)
+            count = 0
             for move in select.moves:
-                tiles[move].config(image=empty)
+                if move != text:
+                    tiles[move].config(image=select.moveImages[count])
+                count = count + 1
             select.swap = ''
             select.moves.clear()
             select.moveImages.clear()
@@ -127,7 +136,7 @@ def select_tile(key):
             for move in select.moves:
                 if move != text:
                     tiles[move].config(image=select.moveImages[count])
-                count=count+1
+                count = count + 1
             select.swap = ''
             select.moves.clear()
             select.moveImages.clear()
@@ -140,14 +149,24 @@ def new():
         select.swap = ''
 
 
+def info():
+    new = Toplevel(root)
+    new.geometry("200x65")
+    new.config(bg="#111111")
+    new.title("Info")
+    label = Label(new, text="VERSION 0.0.1", bg="#111111", fg='#eeeed2')
+    label.pack(pady=20)
+
+
 setup_tiles()
 setup_pieces()
 
 main_menu = Menu(root)
 main_menu.add_command(label="New", command=new)
+main_menu.add_command(label="Info", command=info)
 root.config(menu=main_menu)
 root.geometry("528x528")
-root.title("Chess Game - 0.0.0")
+root.title("Chess Game")
 root.config(bg="#111111")
 root.resizable(height=False, width=False)
 root.mainloop()
