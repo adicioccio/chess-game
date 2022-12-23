@@ -66,18 +66,24 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    # tiles['b3'].config(image=bb)
+    tiles['b3'].config(image=wr)
+    tiles['b6'].config(image=wr)
+    tiles['c3'].config(image=br)
+    # tiles['c4'].config(image=br)
 
 
 def legal_move(text, image):
     if image == 'pyimage6':  # white pawn
         if text[1] == "2":
             num = int(text[1])
+            blocking = False
             if tiles[f'{text[0]}{num + 1}'].cget('image') == 'pyimage13':
                 select.moves.append(f'{text[0]}{num + 1}')
                 select.moveImages.append(tiles[f'{text[0]}{num + 1}'].cget('image'))
                 tiles[f'{text[0]}{num + 1}'].config(image=dot)
-            if tiles[f'{text[0]}{num + 2}'].cget('image') == 'pyimage13':
+            elif tiles[f'{text[0]}{num + 1}'].cget('image') in w_pieces+b_pieces:
+                blocking = True
+            if tiles[f'{text[0]}{num + 2}'].cget('image') == 'pyimage13' and not blocking:
                 select.moves.append(f'{text[0]}{num + 2}')
                 select.moveImages.append(tiles[f'{text[0]}{num + 2}'].cget('image'))
                 tiles[f'{text[0]}{num + 2}'].config(image=dot)
@@ -89,6 +95,7 @@ def legal_move(text, image):
                 tiles[f'{text[0]}{num + 1}'].config(image=dot)
         try:
             move1 = letters[letters.index(text[0]) + 1] + f'{num + 1}'
+            print(move1)
             if tiles[move1].cget('image') in b_pieces:
                 select.moves.append(move1)
                 select.moveImages.append(tiles[move1].cget('image'))
@@ -101,14 +108,18 @@ def legal_move(text, image):
                 select.moveImages.append(tiles[move2].cget('image'))
         except:
             move2 = 'a0'
+
     if image == 'pyimage12':  # black pawn
         if text[1] == "7":
             num = int(text[1])
+            blocking = False
             if tiles[f'{text[0]}{num - 1}'].cget('image') == 'pyimage13':
                 select.moves.append(f'{text[0]}{num - 1}')
                 select.moveImages.append(tiles[f'{text[0]}{num - 1}'].cget('image'))
                 tiles[f'{text[0]}{num - 1}'].config(image=dot)
-            if tiles[f'{text[0]}{num - 2}'].cget('image') == 'pyimage13':
+            elif tiles[f'{text[0]}{num - 1}'].cget('image') in w_pieces+b_pieces:
+                blocking = True
+            if tiles[f'{text[0]}{num - 2}'].cget('image') == 'pyimage13' and not blocking:
                 select.moves.append(f'{text[0]}{num - 2}')
                 select.moveImages.append(tiles[f'{text[0]}{num - 2}'].cget('image'))
                 tiles[f'{text[0]}{num - 2}'].config(image=dot)
@@ -132,11 +143,26 @@ def legal_move(text, image):
                 select.moveImages.append(tiles[move2].cget('image'))
         except:
             move2 = 'a0'
+    if image == 'pyimage3' or image == 'pyimage9': # rooks
+        for i in range(8-int(text[1])):
+            tile = f"{text[0]}{i+int(text[1])+1}"
+            piece = tiles[tile].cget('image')
+            if piece == 'pyimage13':
+                select.moves.append(tile)
+                select.moveImages.append(piece)
+                tiles[tile].config(image=dot)
+            elif piece in w_pieces:
+                break
+            elif piece in b_pieces:
+                select.moves.append(tile)
+                select.moveImages.append(piece)
+                break
 
 
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
+    print(image, text)
     if select.loc == '':
         # player chose square thats empty
         if image == 'pyimage13':
