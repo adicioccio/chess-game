@@ -27,7 +27,8 @@ letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
 
 class Select:
-    swap = ''
+    turn = True
+    loc = ''
     image = None
     bg = ''
     moves = []
@@ -100,53 +101,98 @@ def legal_move(text, image):
                 select.moveImages.append(tiles[move2].cget('image'))
         except:
             move2 = 'a0'
+    if image == 'pyimage12':  # black pawn
+        if text[1] == "7":
+            num = int(text[1])
+            if tiles[f'{text[0]}{num - 1}'].cget('image') == 'pyimage13':
+                select.moves.append(f'{text[0]}{num - 1}')
+                select.moveImages.append(tiles[f'{text[0]}{num - 1}'].cget('image'))
+                tiles[f'{text[0]}{num - 1}'].config(image=dot)
+            if tiles[f'{text[0]}{num - 2}'].cget('image') == 'pyimage13':
+                select.moves.append(f'{text[0]}{num - 2}')
+                select.moveImages.append(tiles[f'{text[0]}{num - 2}'].cget('image'))
+                tiles[f'{text[0]}{num - 2}'].config(image=dot)
+        else:
+            num = int(text[1])
+            if tiles[f'{text[0]}{num - 1}'].cget('image') == 'pyimage13':
+                select.moves.append(f'{text[0]}{num - 1}')
+                select.moveImages.append(tiles[f'{text[0]}{num - 1}'].cget('image'))
+                tiles[f'{text[0]}{num - 1}'].config(image=dot)
+        try:
+            move1 = letters[letters.index(text[0]) + 1] + f'{num - 1}'
+            if tiles[move1].cget('image') in w_pieces:
+                select.moves.append(move1)
+                select.moveImages.append(tiles[move1].cget('image'))
+        except:
+            move1 = 'a0'
+        try:
+            move2 = letters[letters.index(text[0]) - 1] + f'{num - 1}'
+            if tiles[move2].cget('image') in w_pieces:
+                select.moves.append(move2)
+                select.moveImages.append(tiles[move2].cget('image'))
+        except:
+            move2 = 'a0'
 
 
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
-    if select.swap == '':
+    if select.loc == '':
         # player chose square thats empty
         if image == 'pyimage13':
-            select.swap = ''
+            select.loc = ''
         # player chose square with piece
         else:
-            select.swap = text
-            select.image = image
-            select.bg = key.cget('bg')
-            tiles[text].config(bg='#E0CD66')
-            legal_move(text, image)
+            if select.turn == True:
+                if image in w_pieces:
+                    select.loc = text
+                    select.image = image
+                    select.bg = key.cget('bg')
+                    tiles[text].config(bg='#E0CD66')
+                    legal_move(text, image)
+                else:
+                    select.loc = ''
+            else:
+                if image in b_pieces:
+                    select.loc = text
+                    select.image = image
+                    select.bg = key.cget('bg')
+                    tiles[text].config(bg='#E0CD66')
+                    legal_move(text, image)
+                else:
+                    select.loc = ''
     # after player selects first selection
     else:
-        if text == select.swap:
-            tiles[select.swap].config(bg=select.bg)
+        if text == select.loc:
+            tiles[select.loc].config(bg=select.bg)
             count = 0
             for move in select.moves:
                 if move != text:
                     tiles[move].config(image=select.moveImages[count])
                 count = count + 1
-            select.swap = ''
+            select.loc = ''
             select.moves.clear()
             select.moveImages.clear()
         if text in select.moves:
             tiles[text].config(image=select.image)
-            tiles[select.swap].config(image=empty)
-            tiles[select.swap].config(bg=select.bg)
+            tiles[select.loc].config(image=empty)
+            tiles[select.loc].config(bg=select.bg)
             count = 0
             for move in select.moves:
                 if move != text:
                     tiles[move].config(image=select.moveImages[count])
                 count = count + 1
-            select.swap = ''
+            select.loc = ''
             select.moves.clear()
             select.moveImages.clear()
+            select.turn = not select.turn
 
 
 def new():
     setup_pieces()
-    if select.swap != '':
-        tiles[select.swap].config(bg=select.bg)
-        select.swap = ''
+    if select.loc != '':
+        tiles[select.loc].config(bg=select.bg)
+        select.loc = ''
 
 
 def info():
