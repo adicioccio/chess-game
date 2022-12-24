@@ -66,10 +66,10 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    tiles['b5'].config(image=wr)
-    tiles['c5'].config(image=wr)
-    tiles['d5'].config(image=br)
-    tiles['e5'].config(image=wr)
+    # tiles['b5'].config(image=wr)
+    # tiles['c5'].config(image=wr)
+    # tiles['d5'].config(image=br)
+    # tiles['e5'].config(image=wr)
     # tiles['c4'].config(image=br)
 
 
@@ -152,25 +152,53 @@ def legal_move(text, image):
                 select.moves.append(tile)
                 select.moveImages.append(piece)
                 tiles[tile].config(image=dot)
-            if (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
+            elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
                 break
             else:
                 select.moves.append(tile)
                 select.moveImages.append(piece)
-
+                break
         for i in range(int(text[1])-1, 0, -1):
             tile = f"{text[0]}{i}"
             piece = tiles[tile].cget('image')
-            print(tile, piece)
             if piece == 'pyimage13':
                 select.moves.append(tile)
                 select.moveImages.append(piece)
                 tiles[tile].config(image=dot)
-            if (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
+            elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
                 break
             else:
                 select.moves.append(tile)
                 select.moveImages.append(piece)
+                break
+        for letter in letters:
+            if letters.index(letter) > letters.index(text[0]):
+                tile = f"{letter}{text[1]}"
+                piece = tiles[tile].cget('image')
+                if piece == 'pyimage13':
+                    select.moves.append(tile)
+                    select.moveImages.append(piece)
+                    tiles[tile].config(image=dot)
+                elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
+                    break
+                else:
+                    select.moves.append(tile)
+                    select.moveImages.append(piece)
+                    break
+        for letter in reversed(letters):
+            if letters.index(letter) < letters.index(text[0]):
+                tile = f"{letter}{text[1]}"
+                piece = tiles[tile].cget('image')
+                if piece == 'pyimage13':
+                    select.moves.append(tile)
+                    select.moveImages.append(piece)
+                    tiles[tile].config(image=dot)
+                elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
+                    break
+                else:
+                    select.moves.append(tile)
+                    select.moveImages.append(piece)
+                    break
 
 
 def select_tile(key):
