@@ -66,9 +66,10 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    tiles['b3'].config(image=wr)
-    tiles['b6'].config(image=wr)
-    tiles['c3'].config(image=br)
+    tiles['b5'].config(image=wr)
+    tiles['c5'].config(image=wr)
+    tiles['d5'].config(image=br)
+    tiles['e5'].config(image=wr)
     # tiles['c4'].config(image=br)
 
 
@@ -151,18 +152,30 @@ def legal_move(text, image):
                 select.moves.append(tile)
                 select.moveImages.append(piece)
                 tiles[tile].config(image=dot)
-            elif piece in w_pieces:
+            if (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
                 break
-            elif piece in b_pieces:
+            else:
                 select.moves.append(tile)
                 select.moveImages.append(piece)
+
+        for i in range(int(text[1])-1, 0, -1):
+            tile = f"{text[0]}{i}"
+            piece = tiles[tile].cget('image')
+            print(tile, piece)
+            if piece == 'pyimage13':
+                select.moves.append(tile)
+                select.moveImages.append(piece)
+                tiles[tile].config(image=dot)
+            if (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
                 break
+            else:
+                select.moves.append(tile)
+                select.moveImages.append(piece)
 
 
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
-    print(image, text)
     if select.loc == '':
         # player chose square thats empty
         if image == 'pyimage13':
