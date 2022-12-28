@@ -4,7 +4,7 @@ import math
 
 root = Tk()
 
-wk = PhotoImage(file=r"images/WK.png")
+wk = PhotoImage(file=r"images/WK.png") 
 wq = PhotoImage(file=r"images/WQ.png")
 wr = PhotoImage(file=r"images/WR.png")
 wb = PhotoImage(file=r"images/WB.png")
@@ -26,6 +26,7 @@ tiles = {}
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
 
+# helper class to have volatile variables
 class Select:
     turn = True
     loc = ''
@@ -34,10 +35,10 @@ class Select:
     moves = []
     moveImages = []
 
-
 select = Select()
 
 
+# create the grid of tiles with alternating colors
 def setup_tiles():
     index = 1
     alternate = True
@@ -55,6 +56,7 @@ def setup_tiles():
             index += 1
 
 
+# setting pieces on start
 def setup_pieces():
     for tile in tiles:
         tiles[tile].config(image=empty)
@@ -66,13 +68,26 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    # tiles['b5'].config(image=wr)
-    # tiles['c5'].config(image=wr)
-    # tiles['d5'].config(image=br)
-    # tiles['e5'].config(image=wr)
-    # tiles['c4'].config(image=br)
+    tiles['g4'].config(image=wb)
+    tiles['a3'].config(image=bb)
 
 
+# helper function for rooks, bishops and queens
+def tile_checker(tile, piece, image):
+    if piece == 'pyimage13':
+        select.moves.append(tile)
+        select.moveImages.append(piece)
+        tiles[tile].config(image=dot)
+        return 0
+    elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
+        return 1
+    else:
+        select.moves.append(tile)
+        select.moveImages.append(piece)
+        return 1
+
+
+# append legal moves based on piece selected
 def legal_move(text, image):
     if image == 'pyimage6':  # white pawn
         if text[1] == "2":
@@ -96,7 +111,6 @@ def legal_move(text, image):
                 tiles[f'{text[0]}{num + 1}'].config(image=dot)
         try:
             move1 = letters[letters.index(text[0]) + 1] + f'{num + 1}'
-            print(move1)
             if tiles[move1].cget('image') in b_pieces:
                 select.moves.append(move1)
                 select.moveImages.append(tiles[move1].cget('image'))
@@ -148,59 +162,50 @@ def legal_move(text, image):
         for i in range(8-int(text[1])):
             tile = f"{text[0]}{i+int(text[1])+1}"
             piece = tiles[tile].cget('image')
-            if piece == 'pyimage13':
-                select.moves.append(tile)
-                select.moveImages.append(piece)
-                tiles[tile].config(image=dot)
-            elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
-                break
-            else:
-                select.moves.append(tile)
-                select.moveImages.append(piece)
+            if tile_checker(tile, piece, image) == 1:
                 break
         for i in range(int(text[1])-1, 0, -1):
             tile = f"{text[0]}{i}"
             piece = tiles[tile].cget('image')
-            if piece == 'pyimage13':
-                select.moves.append(tile)
-                select.moveImages.append(piece)
-                tiles[tile].config(image=dot)
-            elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
-                break
-            else:
-                select.moves.append(tile)
-                select.moveImages.append(piece)
+            if tile_checker(tile, piece, image) == 1:
                 break
         for letter in letters:
             if letters.index(letter) > letters.index(text[0]):
                 tile = f"{letter}{text[1]}"
                 piece = tiles[tile].cget('image')
-                if piece == 'pyimage13':
-                    select.moves.append(tile)
-                    select.moveImages.append(piece)
-                    tiles[tile].config(image=dot)
-                elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
-                    break
-                else:
-                    select.moves.append(tile)
-                    select.moveImages.append(piece)
+                if tile_checker(tile, piece, image) == 1:
                     break
         for letter in reversed(letters):
             if letters.index(letter) < letters.index(text[0]):
                 tile = f"{letter}{text[1]}"
                 piece = tiles[tile].cget('image')
-                if piece == 'pyimage13':
-                    select.moves.append(tile)
-                    select.moveImages.append(piece)
-                    tiles[tile].config(image=dot)
-                elif (image in w_pieces and piece in w_pieces) or (image in b_pieces and piece in b_pieces):
+                if tile_checker(tile, piece, image) == 1:
                     break
-                else:
-                    select.moves.append(tile)
-                    select.moveImages.append(piece)
-                    break
+    if image == 'pyimage10' or image == 'pyimage4': # bishops
+        index = letters.index(text[0])
+        for i in range(8-int(text[1])):
+            print(int(text[1]))
+            try:
+                tile = f"{letters[index+1]}{i + int(text[1]) + 1}"
+            except:
+                break
+            index += 1
+            piece = tiles[tile].cget('image')
+            if tile_checker(tile, piece, image) == 1:
+                break
+        index = letters.index(text[0])
+        for i in range(int(text[1]) - 1, 0, -1):
+            try:
+                tile = f"{letters[index + 1]}{i}"
+            except:
+                break
+            piece = tiles[tile].cget('image')
+            index += 1
+            if tile_checker(tile, piece, image) == 1:
+                break
 
 
+# function attached to individual buttons and called when clicked
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
@@ -253,15 +258,22 @@ def select_tile(key):
             select.moves.clear()
             select.moveImages.clear()
             select.turn = not select.turn
+            if select.turn is True:
+                root.title("Chess Game - White to Move")
+            else:
+                root.title("Chess Game - Black to Move")
 
 
+# new game menu option
 def new():
     setup_pieces()
+    select.turn = True
     if select.loc != '':
         tiles[select.loc].config(bg=select.bg)
         select.loc = ''
 
 
+# info menu option
 def info():
     new = Toplevel(root)
     new.geometry("200x65")
@@ -271,6 +283,7 @@ def info():
     label.pack(pady=20)
 
 
+# main setup on start
 setup_tiles()
 setup_pieces()
 
@@ -279,7 +292,7 @@ main_menu.add_command(label="New", command=new)
 main_menu.add_command(label="Info", command=info)
 root.config(menu=main_menu)
 root.geometry("528x528")
-root.title("Chess Game")
+root.title("Chess Game - White to Move")
 root.config(bg="#111111")
 root.resizable(height=False, width=False)
 root.mainloop()
