@@ -68,7 +68,7 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    tiles['g4'].config(image=wb)
+    tiles['e4'].config(image=wb)
     tiles['a3'].config(image=bb)
 
 
@@ -123,7 +123,6 @@ def legal_move(text, image):
                 select.moveImages.append(tiles[move2].cget('image'))
         except:
             move2 = 'a0'
-
     if image == 'pyimage12':  # black pawn
         if text[1] == "7":
             num = int(text[1])
@@ -159,23 +158,23 @@ def legal_move(text, image):
         except:
             move2 = 'a0'
     if image == 'pyimage3' or image == 'pyimage9': # rooks
-        for i in range(8-int(text[1])):
+        for i in range(8-int(text[1])): # up
             tile = f"{text[0]}{i+int(text[1])+1}"
             piece = tiles[tile].cget('image')
             if tile_checker(tile, piece, image) == 1:
                 break
-        for i in range(int(text[1])-1, 0, -1):
+        for i in range(int(text[1])-1, 0, -1): # down
             tile = f"{text[0]}{i}"
             piece = tiles[tile].cget('image')
             if tile_checker(tile, piece, image) == 1:
                 break
-        for letter in letters:
+        for letter in letters: # right
             if letters.index(letter) > letters.index(text[0]):
                 tile = f"{letter}{text[1]}"
                 piece = tiles[tile].cget('image')
                 if tile_checker(tile, piece, image) == 1:
                     break
-        for letter in reversed(letters):
+        for letter in reversed(letters): # left
             if letters.index(letter) < letters.index(text[0]):
                 tile = f"{letter}{text[1]}"
                 piece = tiles[tile].cget('image')
@@ -184,7 +183,6 @@ def legal_move(text, image):
     if image == 'pyimage10' or image == 'pyimage4': # bishops
         index = letters.index(text[0])
         for i in range(8-int(text[1])):
-            print(int(text[1]))
             try:
                 tile = f"{letters[index+1]}{i + int(text[1]) + 1}"
             except:
@@ -201,6 +199,32 @@ def legal_move(text, image):
                 break
             piece = tiles[tile].cget('image')
             index += 1
+            if tile_checker(tile, piece, image) == 1:
+                break
+        index = letters.index(text[0])
+        for i in range(8 - int(text[1])):
+            try:
+                if index > 0:
+                    tile = f"{letters[index-1]}{i + int(text[1]) + 1}"
+                else:
+                    break
+            except:
+                break
+            index -= 1
+            piece = tiles[tile].cget('image')
+            if tile_checker(tile, piece, image) == 1:
+                break
+        index = letters.index(text[0])
+        for i in range(int(text[1]) - 1, 0, -1):
+            try:
+                if index > 0:
+                    tile = f"{letters[index - 1]}{i}"
+                else:
+                    break
+            except:
+                break
+            index -= 1
+            piece = tiles[tile].cget('image')
             if tile_checker(tile, piece, image) == 1:
                 break
 
