@@ -68,11 +68,11 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    tiles['e4'].config(image=wb)
-    tiles['a3'].config(image=bb)
+    tiles['e4'].config(image=wq)
+    tiles['a3'].config(image=bq)
 
 
-# helper function for rooks, bishops and queens
+# helper function for rooks, bishops and queens that checks if piece is empty or capturable
 def tile_checker(tile, piece, image):
     if piece == 'pyimage13':
         select.moves.append(tile)
@@ -87,14 +87,90 @@ def tile_checker(tile, piece, image):
         return 1
 
 
+# handles the rook movement by looping squares on the vertical on horizontal
+def rook_move(text, image):
+    for i in range(8 - int(text[1])):  # up
+        tile = f"{text[0]}{i + int(text[1]) + 1}"
+        piece = tiles[tile].cget('image')
+        if tile_checker(tile, piece, image) == 1:
+            break
+    for i in range(int(text[1]) - 1, 0, -1):  # down
+        tile = f"{text[0]}{i}"
+        piece = tiles[tile].cget('image')
+        if tile_checker(tile, piece, image) == 1:
+            break
+    for letter in letters:  # right
+        if letters.index(letter) > letters.index(text[0]):
+            tile = f"{letter}{text[1]}"
+            piece = tiles[tile].cget('image')
+            if tile_checker(tile, piece, image) == 1:
+                break
+    for letter in reversed(letters):  # left
+        if letters.index(letter) < letters.index(text[0]):
+            tile = f"{letter}{text[1]}"
+            piece = tiles[tile].cget('image')
+            if tile_checker(tile, piece, image) == 1:
+                break
+
+
+# handles the bishop movement by looping squares on the diagonal
+def bishop_move(text, image):
+    index = letters.index(text[0])
+    for i in range(8 - int(text[1])):
+        try:
+            tile = f"{letters[index + 1]}{i + int(text[1]) + 1}"
+        except:
+            break
+        index += 1
+        piece = tiles[tile].cget('image')
+        if tile_checker(tile, piece, image) == 1:
+            break
+    index = letters.index(text[0])
+    for i in range(int(text[1]) - 1, 0, -1):
+        try:
+            tile = f"{letters[index + 1]}{i}"
+        except:
+            break
+        piece = tiles[tile].cget('image')
+        index += 1
+        if tile_checker(tile, piece, image) == 1:
+            break
+    index = letters.index(text[0])
+    for i in range(8 - int(text[1])):
+        try:
+            if index > 0:
+                tile = f"{letters[index - 1]}{i + int(text[1]) + 1}"
+            else:
+                break
+        except:
+            break
+        index -= 1
+        piece = tiles[tile].cget('image')
+        if tile_checker(tile, piece, image) == 1:
+            break
+    index = letters.index(text[0])
+    for i in range(int(text[1]) - 1, 0, -1):
+        try:
+            if index > 0:
+                tile = f"{letters[index - 1]}{i}"
+            else:
+                break
+        except:
+            break
+        index -= 1
+        piece = tiles[tile].cget('image')
+        if tile_checker(tile, piece, image) == 1:
+            break
+
+
 # append legal moves based on piece selected
 def legal_move(text, image):
-    if image == 'pyimage6' or image == 'pyimage12':  # white pawn
+    if image == 'pyimage6' or image == 'pyimage12':  # pawns
         num1, num2, num3 = 0, 0, 1
-        if image == 'pyimage6':
+        if image == 'pyimage6': # white pawn
             num1 = int(text[1]) + 1
             num2 = int(text[1]) + 2
-        else:
+        else: # black pawn
             num1 = int(text[1]) - 1
             num2 = int(text[1]) - 2
         if text[1] == "2" or text[1] == "7":
@@ -117,96 +193,32 @@ def legal_move(text, image):
                 tiles[f'{text[0]}{num1}'].config(image=dot)
         try:
             move1 = letters[letters.index(text[0]) + num3] + f'{num1}'
-            print(tiles[move1].cget('image'), tiles[text].cget('image'))
-            if (tiles[text].cget('image') in w_pieces and tiles[move1].cget('image') in b_pieces) or (tiles[text].cget('image') in b_pieces and tiles[move1].cget('image') in w_pieces):
+            if (tiles[text].cget('image') in w_pieces and tiles[move1].cget('image') in b_pieces) or \
+                    (tiles[text].cget('image') in b_pieces and tiles[move1].cget('image') in w_pieces):
                 select.moves.append(move1)
                 select.moveImages.append(tiles[move1].cget('image'))
         except:
             move1 = 'a0'
         try:
             move2 = letters[letters.index(text[0]) - num3] + f'{num1}'
-            if (tiles[text].cget('image') in w_pieces and tiles[move2].cget('image') in b_pieces) or (tiles[text].cget('image') in b_pieces and tiles[move2].cget('image') in w_pieces):
+            if (tiles[text].cget('image') in w_pieces and tiles[move2].cget('image') in b_pieces) or \
+                    (tiles[text].cget('image') in b_pieces and tiles[move2].cget('image') in w_pieces):
                 select.moves.append(move2)
                 select.moveImages.append(tiles[move2].cget('image'))
         except:
             move2 = 'a0'
     if image == 'pyimage3' or image == 'pyimage9': # rooks
-        for i in range(8-int(text[1])): # up
-            tile = f"{text[0]}{i+int(text[1])+1}"
-            piece = tiles[tile].cget('image')
-            if tile_checker(tile, piece, image) == 1:
-                break
-        for i in range(int(text[1])-1, 0, -1): # down
-            tile = f"{text[0]}{i}"
-            piece = tiles[tile].cget('image')
-            if tile_checker(tile, piece, image) == 1:
-                break
-        for letter in letters: # right
-            if letters.index(letter) > letters.index(text[0]):
-                tile = f"{letter}{text[1]}"
-                piece = tiles[tile].cget('image')
-                if tile_checker(tile, piece, image) == 1:
-                    break
-        for letter in reversed(letters): # left
-            if letters.index(letter) < letters.index(text[0]):
-                tile = f"{letter}{text[1]}"
-                piece = tiles[tile].cget('image')
-                if tile_checker(tile, piece, image) == 1:
-                    break
+        rook_move(text, image)
     if image == 'pyimage10' or image == 'pyimage4': # bishops
-        index = letters.index(text[0])
-        for i in range(8-int(text[1])):
-            try:
-                tile = f"{letters[index+1]}{i + int(text[1]) + 1}"
-            except:
-                break
-            index += 1
-            piece = tiles[tile].cget('image')
-            if tile_checker(tile, piece, image) == 1:
-                break
-        index = letters.index(text[0])
-        for i in range(int(text[1]) - 1, 0, -1):
-            try:
-                tile = f"{letters[index + 1]}{i}"
-            except:
-                break
-            piece = tiles[tile].cget('image')
-            index += 1
-            if tile_checker(tile, piece, image) == 1:
-                break
-        index = letters.index(text[0])
-        for i in range(8 - int(text[1])):
-            try:
-                if index > 0:
-                    tile = f"{letters[index-1]}{i + int(text[1]) + 1}"
-                else:
-                    break
-            except:
-                break
-            index -= 1
-            piece = tiles[tile].cget('image')
-            if tile_checker(tile, piece, image) == 1:
-                break
-        index = letters.index(text[0])
-        for i in range(int(text[1]) - 1, 0, -1):
-            try:
-                if index > 0:
-                    tile = f"{letters[index - 1]}{i}"
-                else:
-                    break
-            except:
-                break
-            index -= 1
-            piece = tiles[tile].cget('image')
-            if tile_checker(tile, piece, image) == 1:
-                break
-
+        bishop_move(text, image)
+    if image == 'pyimage2' or image == 'pyimage8': # queen
+        rook_move(text, image)
+        bishop_move(text, image)
 
 # function attached to individual buttons and called when clicked
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
-    print(select.moves)
     if select.loc == '':
         # player chose square thats empty
         if image == 'pyimage13':
