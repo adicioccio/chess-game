@@ -26,7 +26,7 @@ tiles = {}
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
 
-# helper class to have volatile variables
+# helper class to have dynamic variables
 class Select:
     turn = True
     loc = ''
@@ -38,7 +38,7 @@ class Select:
 select = Select()
 
 
-# create the grid of tiles with alternating colors
+# create the grid of buttons for tiles with alternating colors and add action listeners to buttons
 def setup_tiles():
     index = 1
     alternate = True
@@ -68,8 +68,10 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    tiles['e4'].config(image=wq)
-    tiles['a3'].config(image=bq)
+    # tiles['c2'].config(image=wh)
+    # tiles['b4'].config(image=wh)
+    # tiles['g5'].config(image=wh)
+    # tiles['e4'].config(image=wh)
 
 
 # helper function for rooks, bishops and queens that checks if piece is empty or capturable
@@ -163,7 +165,7 @@ def bishop_move(text, image):
             break
 
 
-# append legal moves based on piece selected
+# append legal moves into moves array based on piece selected
 def legal_move(text, image):
     if image == 'pyimage6' or image == 'pyimage12':  # pawns
         num1, num2, num3 = 0, 0, 1
@@ -209,11 +211,42 @@ def legal_move(text, image):
             move2 = 'a0'
     if image == 'pyimage3' or image == 'pyimage9': # rooks
         rook_move(text, image)
-    if image == 'pyimage10' or image == 'pyimage4': # bishops
+    if image == 'pyimage4' or image == 'pyimage10': # bishops
         bishop_move(text, image)
+    if image == 'pyimage5' or image == 'pyimage11': # knights
+        if letters.index(text[0]) > 1:
+            if int(text[1]) > 1:
+                move = f'{letters[letters.index(text[0]) - 2]}{int(text[1]) - 1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) < 8:
+                move = f'{letters[letters.index(text[0]) - 2]}{int(text[1]) + 1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+        if letters.index(text[0]) > 0:
+            if int(text[1]) > 2:
+                move = f'{letters[letters.index(text[0]) - 1]}{int(text[1]) - 2}'
+                tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) < 7:
+                move = f'{letters[letters.index(text[0]) - 1]}{int(text[1]) + 2}'
+                tile_checker(move, tiles[move].cget('image'), image)
+        if letters.index(text[0]) < 6:
+            if int(text[1]) > 1:
+                move = f'{letters[letters.index(text[0]) + 2]}{int(text[1]) - 1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) < 8:
+                move = f'{letters[letters.index(text[0]) + 2]}{int(text[1]) + 1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+        if letters.index(text[0]) < 7:
+            if int(text[1]) > 2:
+                move = f'{letters[letters.index(text[0]) + 1]}{int(text[1]) - 2}'
+                tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) < 7:
+                move = f'{letters[letters.index(text[0]) + 1]}{int(text[1]) + 2}'
+                tile_checker(move, tiles[move].cget('image'), image)
     if image == 'pyimage2' or image == 'pyimage8': # queen
         rook_move(text, image)
         bishop_move(text, image)
+    if image == 'pyimage1' or image == 'pyimage7': # king
+        print('king')
 
 # function attached to individual buttons and called when clicked
 def select_tile(key):
@@ -278,6 +311,7 @@ def select_tile(key):
 def new():
     setup_pieces()
     select.turn = True
+    root.title("Chess Game - White to Move")
     if select.loc != '':
         tiles[select.loc].config(bg=select.bg)
         select.loc = ''
