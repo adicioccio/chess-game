@@ -68,10 +68,7 @@ def setup_pieces():
     for i in range(8):
         tiles[f"{letters[i]}7"].config(image=bp)
         tiles[f"{letters[i]}2"].config(image=wp)
-    # tiles['c2'].config(image=wh)
-    # tiles['b4'].config(image=wh)
-    # tiles['g5'].config(image=wh)
-    # tiles['e4'].config(image=wh)
+
 
 
 # helper function for rooks, bishops and queens that checks if piece is empty or capturable
@@ -246,7 +243,31 @@ def legal_move(text, image):
         rook_move(text, image)
         bishop_move(text, image)
     if image == 'pyimage1' or image == 'pyimage7': # king
-        print('king')
+        if letters.index(text[0]) > 1: # left
+            move = f'{letters[letters.index(text[0])-1]}{int(text[1])}'
+            tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) < 8:  # up
+                move = f'{letters[letters.index(text[0])-1]}{int(text[1])+1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) > 1:  # down
+                move = f'{letters[letters.index(text[0])-1]}{int(text[1])-1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+        if letters.index(text[0]) < 7: # right
+            move = f'{letters[letters.index(text[0])+1]}{int(text[1])}'
+            tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) < 8:  # up
+                move = f'{letters[letters.index(text[0])+1]}{int(text[1])+1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+            if int(text[1]) > 1:  # down
+                move = f'{letters[letters.index(text[0])+1]}{int(text[1])-1}'
+                tile_checker(move, tiles[move].cget('image'), image)
+        if int(text[1]) < 8:  # up
+            move = f'{letters[letters.index(text[0])]}{int(text[1])+1}'
+            tile_checker(move, tiles[move].cget('image'), image)
+        if int(text[1]) > 1: # down
+            move = f'{letters[letters.index(text[0])]}{int(text[1])-1}'
+            tile_checker(move, tiles[move].cget('image'), image)
+
 
 # function attached to individual buttons and called when clicked
 def select_tile(key):
@@ -258,7 +279,7 @@ def select_tile(key):
             select.loc = ''
         # player chose square with piece
         else:
-            if select.turn == True:
+            if select.turn:
                 if image in w_pieces:
                     select.loc = text
                     select.image = image
