@@ -14,8 +14,11 @@ math
 python3 chess.py
 ```
 
+<!--
 ### Install Libraries
 
 ```sh
 pip install -r requirements.txt
 ```
+-->
+
