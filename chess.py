@@ -273,8 +273,9 @@ def legal_move(text, image):
 def select_tile(key):
     text = key.cget('text')
     image = key.cget('image')
+    
     if select.loc == '':
-        # player chose square thats empty
+        # player chose square that's empty
         if image == 'pyimage13':
             select.loc = ''
         # player chose square with piece
@@ -299,33 +300,65 @@ def select_tile(key):
                     select.loc = ''
     # after player selects first selection
     else:
-        if text == select.loc:
+        if select.turn and image in w_pieces:
+            # unhighlight previous selection
             tiles[select.loc].config(bg=select.bg)
             count = 0
             for move in select.moves:
                 if move != text:
                     tiles[move].config(image=select.moveImages[count])
                 count = count + 1
-            select.loc = ''
+            select.loc = text
+            select.image = image
+            select.bg = key.cget('bg')
             select.moves.clear()
             select.moveImages.clear()
-        if text in select.moves:
-            tiles[text].config(image=select.image)
-            tiles[select.loc].config(image=empty)
+            legal_move(text, image)
+            tiles[text].config(bg='#E0CD66')
+        elif not select.turn and image in b_pieces:
+            # unhighlight previous selection
             tiles[select.loc].config(bg=select.bg)
             count = 0
             for move in select.moves:
                 if move != text:
                     tiles[move].config(image=select.moveImages[count])
                 count = count + 1
-            select.loc = ''
+            select.loc = text
+            select.image = image
+            select.bg = key.cget('bg')
             select.moves.clear()
             select.moveImages.clear()
-            select.turn = not select.turn
-            if select.turn is True:
-                root.title("Chess Game - White to Move")
+            legal_move(text, image)
+            tiles[text].config(bg='#E0CD66')
+        else:
+            if text in select.moves:
+                tiles[text].config(image=select.image)
+                tiles[select.loc].config(image=empty)
+                tiles[select.loc].config(bg=select.bg)
+                count = 0
+                for move in select.moves:
+                    if move != text:
+                        tiles[move].config(image=select.moveImages[count])
+                    count = count + 1
+                select.loc = ''
+                select.moves.clear()
+                select.moveImages.clear()
+                select.turn = not select.turn
+                if select.turn is True:
+                    root.title("Chess Game - White to Move")
+                else:
+                    root.title("Chess Game - Black to Move")
             else:
-                root.title("Chess Game - Black to Move")
+                # unhighlight previous selection
+                tiles[select.loc].config(bg=select.bg)
+                count = 0
+                for move in select.moves:
+                    if move != text:
+                        tiles[move].config(image=select.moveImages[count])
+                    count = count + 1
+                select.loc = ''
+                select.moves.clear()
+                select.moveImages.clear()
 
 
 # new game menu option
